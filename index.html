@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeff McArdle | Senior Staff Software Engineer</title>
+    <meta name="description" content="25 years of crafting intuitive user experiences. Senior Staff Software Engineer specializing in frontend architecture and team leadership.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --accent: #00d4ff;
+            --accent-dim: rgba(0, 212, 255, 0.1);
+            --accent-glow: rgba(0, 212, 255, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background grid */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+            filter: blur(80px);
+            transition: transform 0.3s ease-out;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-intro {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .hero-name {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease 0.1s forwards;
+        }
+
+        .hero-name .highlight {
+            background: linear-gradient(135deg, var(--accent), #00ffaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-title {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease 0.2s forwards;
+        }
+
+        .hero-tagline {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease 0.3s forwards;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease 0.4s forwards;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            opacity: 0;
+            animation: fadeIn 1s ease 1s forwards;
+        }
+
+        .scroll-indicator .arrow {
+            width: 20px;
+            height: 20px;
+            border-right: 2px solid var(--accent);
+            border-bottom: 2px solid var(--accent);
+            transform: rotate(45deg);
+            animation: bounce 2s infinite;
+        }
+
+        /* Sections */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        /* Story Section */
+        .story p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            max-width: 700px;
+        }
+
+        .story .emphasis {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .story .accent {
+            color: var(--accent);
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin-top: 3rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent), var(--accent-dim));
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 3rem;
+            padding-bottom: 3rem;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.6s ease;
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            background: var(--bg-primary);
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover::before {
+            background: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .timeline-period {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-company {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-title {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Skills */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .skill-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .skill-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .skill-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skill-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Beyond Code */
+        .interests {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .interest-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .interest-tag:hover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .interest-tag .icon {
+            font-size: 1.2rem;
+        }
+
+        /* Contact */
+        .contact-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .contact-link:hover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .contact-link svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+        }
+
+        footer .easter-egg {
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        footer .easter-egg:hover {
+            color: var(--accent);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: rotate(45deg) translateY(0);
+            }
+            40% {
+                transform: rotate(45deg) translateY(-10px);
+            }
+            60% {
+                transform: rotate(45deg) translateY(-5px);
+            }
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                padding-top: 4rem;
+            }
+
+            section {
+                padding: 4rem 1.5rem;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+
+            .stat-number {
+                font-size: 2.2rem;
+            }
+
+            .timeline-item {
+                padding-left: 2rem;
+            }
+        }
+
+        /* Easter egg - Konami code */
+        .konami-activated {
+            animation: rainbow 2s linear infinite;
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        /* Typing cursor effect */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+            color: var(--accent);
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow" id="glow"></div>
+
+    <div class="content">
+        <!-- Hero -->
+        <section class="hero">
+            <p class="hero-intro">// Hello, World</p>
+            <h1 class="hero-name">Jeff <span class="highlight">McArdle</span></h1>
+            <p class="hero-title">Senior Staff Software Engineer</p>
+            <p class="hero-tagline">25 years of turning complex problems into simple, intuitive experiences. Based in Kentucky, building for the web.</p>
+            <div class="hero-cta">
+                <a href="#story" class="btn btn-primary">My Journey</a>
+                <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+            </div>
+            <div class="scroll-indicator">
+                <span>Scroll to explore</span>
+                <div class="arrow"></div>
+            </div>
+        </section>
+
+        <!-- Story -->
+        <section id="story" class="story">
+            <p class="section-label fade-in">// The Story</p>
+            <h2 class="section-title fade-in">Building the Web Since '99</h2>
+            <p class="fade-in">
+                It started with curiosity and a <span class="emphasis">Computer Science degree from the University of Kentucky</span>.
+                What began as writing code quickly evolved into something more—<span class="accent">designing experiences</span> that people actually want to use.
+            </p>
+            <p class="fade-in">
+                Over two and a half decades, I've watched the web transform from static pages to dynamic applications.
+                Through it all, my focus has stayed the same: <span class="emphasis">making complex things feel simple</span>.
+            </p>
+            <p class="fade-in">
+                I've grown from developer to <span class="accent">technical leader</span>, guiding teams and entire departments
+                while never losing touch with the code. My sweet spot? The intersection of <span class="emphasis">elegant frontend architecture</span>
+                and <span class="emphasis">intuitive user experience</span>.
+            </p>
+
+            <div class="stats fade-in">
+                <div class="stat">
+                    <div class="stat-number">25+</div>
+                    <div class="stat-label">Years Building</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">Companies</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">10+</div>
+                    <div class="stat-label">Team Size Led</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">Curiosity</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Journey -->
+        <section id="journey">
+            <p class="section-label fade-in">// The Journey</p>
+            <h2 class="section-title fade-in">Career Timeline</h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-period">2018 – Present</div>
+                    <div class="timeline-company">WellSky</div>
+                    <div class="timeline-title">Senior Staff Software Engineer</div>
+                    <div class="timeline-note">Leading frontend architecture and team delivery</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-period">2014 – 2018</div>
+                    <div class="timeline-company">Consolo Services</div>
+                    <div class="timeline-title">Senior Developer</div>
+                    <div class="timeline-note">Acquired by WellSky</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-period">2011 – 2014</div>
+                    <div class="timeline-company">Aspect Software</div>
+                    <div class="timeline-title">Senior Consultant</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-period">2008 – 2011</div>
+                    <div class="timeline-company">Hewlett Packard</div>
+                    <div class="timeline-title">Senior Developer</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-period">2004 – 2008</div>
+                    <div class="timeline-company">Exstream Software</div>
+                    <div class="timeline-title">Developer</div>
+                    <div class="timeline-note">Acquired by Hewlett Packard</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-period">1999 – 2004</div>
+                    <div class="timeline-company">TransDigital Solutions</div>
+                    <div class="timeline-title">Developer</div>
+                    <div class="timeline-note">Where it all began</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills -->
+        <section id="skills">
+            <p class="section-label fade-in">// The Craft</p>
+            <h2 class="section-title fade-in">What I Do Best</h2>
+
+            <div class="skills-grid">
+                <div class="skill-card fade-in">
+                    <h3>🎨 Frontend Architecture</h3>
+                    <p>Building scalable, maintainable frontend systems that teams love to work with. Modern frameworks, clean patterns.</p>
+                </div>
+                <div class="skill-card fade-in">
+                    <h3>✨ UX Design</h3>
+                    <p>Designing intuitive interfaces that feel natural. Simple yet effective—complexity hidden, clarity delivered.</p>
+                </div>
+                <div class="skill-card fade-in">
+                    <h3>👥 Technical Leadership</h3>
+                    <p>Leading teams and managing delivery. Mentoring developers, aligning technology with business goals.</p>
+                </div>
+                <div class="skill-card fade-in">
+                    <h3>🔧 Full-Stack Capability</h3>
+                    <p>Frontend focus, full-stack fluency. Backend APIs, databases, infrastructure—I speak all the languages.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Beyond Code -->
+        <section id="beyond">
+            <p class="section-label fade-in">// Beyond the Code</p>
+            <h2 class="section-title fade-in">When I'm Not Coding</h2>
+            <p class="fade-in" style="color: var(--text-secondary); max-width: 600px; margin-bottom: 2rem;">
+                There's more to life than semicolons. Here's what keeps me curious and creative outside of work.
+            </p>
+
+            <div class="interests fade-in">
+                <div class="interest-tag">
+                    <span class="icon">🎵</span>
+                    <span>Music</span>
+                </div>
+                <div class="interest-tag">
+                    <span class="icon">🧠</span>
+                    <span>Trivia</span>
+                </div>
+                <div class="interest-tag">
+                    <span class="icon">💡</span>
+                    <span>ESP32 Projects</span>
+                </div>
+                <div class="interest-tag">
+                    <span class="icon">🌈</span>
+                    <span>LED Tinkering</span>
+                </div>
+                <div class="interest-tag">
+                    <span class="icon">🔌</span>
+                    <span>Hardware Hacking</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section id="contact">
+            <p class="section-label fade-in">// Let's Connect</p>
+            <h2 class="section-title fade-in">Say Hello</h2>
+            <p class="fade-in" style="color: var(--text-secondary); max-width: 600px; margin-bottom: 2rem;">
+                Whether you want to discuss a project, talk tech, or debate the best trivia categories—I'm always up for a conversation.
+            </p>
+
+            <div class="contact-links fade-in">
+                <a href="https://github.com/jeffmcardle" target="_blank" rel="noopener" class="contact-link">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                    </svg>
+                    <span>GitHub</span>
+                </a>
+                <a href="https://www.linkedin.com/in/jeff-mcardle-271a942/" target="_blank" rel="noopener" class="contact-link">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    <span>LinkedIn</span>
+                </a>
+                <a href="mailto:jeff@jeffmcardle.com" class="contact-link">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <span>Email</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>
+                <span class="easter-egg" id="easter-egg" title="Try the Konami code...">Crafted with care</span>
+                by Jeff McArdle · © 2024
+            </p>
+            <p style="margin-top: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">
+                // Simple yet effective
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Glow follows cursor
+        const glow = document.getElementById('glow');
+        let mouseX = 0, mouseY = 0;
+        let glowX = 0, glowY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX - 300;
+            mouseY = e.clientY - 300 + window.scrollY;
+        });
+
+        function animateGlow() {
+            glowX += (mouseX - glowX) * 0.1;
+            glowY += (mouseY - glowY) * 0.1;
+            glow.style.transform = `translate(${glowX}px, ${glowY}px)`;
+            requestAnimationFrame(animateGlow);
+        }
+        animateGlow();
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in, .timeline-item').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Konami code easter egg
+        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+        let konamiIndex = 0;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    document.body.classList.add('konami-activated');
+                    setTimeout(() => {
+                        document.body.classList.remove('konami-activated');
+                    }, 5000);
+                    konamiIndex = 0;
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        });
+
+        // Easter egg click
+        document.getElementById('easter-egg').addEventListener('click', () => {
+            const messages = [
+                '🎵 Music makes the code flow...',
+                '🧠 Did you know? I love trivia!',
+                '💡 Currently tinkering with ESP32...',
+                '🌈 RGB everything!',
+                '// Simple yet effective'
+            ];
+            const msg = messages[Math.floor(Math.random() * messages.length)];
+            const el = document.getElementById('easter-egg');
+            const original = el.textContent;
+            el.textContent = msg;
+            setTimeout(() => {
+                el.textContent = original;
+            }, 2000);
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
